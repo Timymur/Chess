@@ -55,7 +55,7 @@ namespace Chess
         {
             fen = FenFigures() + " " +  // Расстановка фигур
                   (moveColor == Color.white ? "w" : "b") + // цвет фигуры, чей ход
-                   " - - 0 " + moveNumber.ToString(); // опускаем рокировку , 50 ходов ничьи 
+                   " - - 0 " + moveNumber.ToString(); // опускаем рокировку , взятие на проходе, 50 ходов ничьи 
         }
 
         string FenFigures()

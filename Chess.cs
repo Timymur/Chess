@@ -49,6 +49,13 @@ namespace Chess
             return f == Figure.none ? '.' : (char)f;
         }
 
+        public char GetFigureAt(string xy)
+        {
+            Square square = new Square(xy);
+            Figure f = board.GetFigureAt(square);
+            return f == Figure.none ? '.' : (char)f;
+        }
+
         void FindAllMoves()
         {
             allMoves = new List<FigureMoving>();
