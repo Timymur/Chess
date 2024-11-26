@@ -72,7 +72,7 @@ namespace Chess
 
 
                 case Figure.whitePawn:
-                case Figure.blackePawn:
+                case Figure.blackPawn:
                     return CanPawnMove();
 
                 default: return false;
@@ -124,7 +124,7 @@ namespace Chess
                 CanPawnGo(stepY) ||
                 CanPawnJump(stepY) ||
                 CanPawnEat(stepY)||
-                CanEatEnemyPawnJump(stepY);
+                CanTakeOnPass(stepY);
         }
 
         private bool CanPawnEat(int stepY)
@@ -157,8 +157,14 @@ namespace Chess
             return false;
         }
 
-        bool CanEatEnemyPawnJump(int stepY)
+        bool CanTakeOnPass(int stepY)
         {
+            Square TOP = new Square(board.takeOnPass);
+
+            if (fm.to == TOP)
+                if (fm.AbsDeltaX == 1)
+                    if (fm.DeltaY == stepY)
+                        return true;
             return false;
         }
             

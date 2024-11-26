@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Chess
 {
@@ -39,8 +40,14 @@ namespace Chess
 
             Board nextBoard = board.Move(fm);
 
-            string nextCastling = nextBoard.ChangeCastling(fm); // После хода меняем фен, если была рокировка. Внутри доски поменять не получится, там проверки следующие на ходы
-            nextBoard.castling = nextCastling;
+            nextBoard.castling = nextBoard.ChangeCastling(fm); // После хода меняем фен, если была рокировка. Внутри доски поменять не получится, там проверки следующие на ходы
+
+            if ((fm.figure == Figure.whitePawn || fm.figure == Figure.blackPawn) && (fm.AbsDeltaY == 2)) //Меняем фен для взятия на проходе.
+                nextBoard.takeOnPass = nextBoard.NextTakeOnPass(fm);
+
+            else nextBoard.takeOnPass = "-";
+
+
             nextBoard.GenerateFEN();
 
             Chess nextChess = new Chess(nextBoard); 

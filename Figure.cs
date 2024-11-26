@@ -22,7 +22,7 @@ namespace Chess
         blackKnight = 'n',
         blackBishop = 'b',
         blackRook = 'r',
-        blackePawn = 'p',
+        blackPawn = 'p',
 
 
     }
