@@ -16,6 +16,8 @@ namespace Chess
 
         public int moveNumber { get; private set; }
 
+        public string castling {  get;  set; }
+
         public Board(string fen)
         {
             this.fen = fen;
@@ -32,6 +34,7 @@ namespace Chess
             if (parts.Length != 6) return;
             InitFigures(parts[0]);
             moveColor = parts[1] == "b" ? Color.black : Color.white;
+            castling = parts[2];
             moveNumber = int.Parse(parts[5]);
 
 
@@ -51,11 +54,12 @@ namespace Chess
 
         }
 
-        void GenerateFEN() // Собираем фен 
+        public void GenerateFEN() // Собираем фен 
         {
             fen = FenFigures() + " " +  // Расстановка фигур
-                  (moveColor == Color.white ? "w" : "b") + // цвет фигуры, чей ход
-                   " - - 0 " + moveNumber.ToString(); // опускаем рокировку , взятие на проходе, 50 ходов ничьи 
+                  (moveColor == Color.white ? "w " : "b ") + // цвет фигуры, чей ход
+                  castling + // рокировка
+                   " - 0 " + moveNumber.ToString(); // опускаем взятие на проходе, 50 ходов ничьи 
         }
 
         string FenFigures()
@@ -102,10 +106,20 @@ namespace Chess
             next.SetFigureAt(fm.from, Figure.none); // удаляем фигуру с предыдущего места
             next.SetFigureAt(fm.to, fm.promotion == Figure.none ? fm.figure : fm.promotion);// ставим ее на новую клетку/ Если нет превращения фигуры, а если есть то устанавливаем промоушн  в тот который есть
 
+            if ((fm.figure == Figure.whiteKing || fm.figure == Figure.blackKing ) && (fm.AbsDeltaX == 2)) // Ход ладьей при рокировке
+            {
+                FigureMoving fmRook;
+                fmRook = CastlingMove(fm);
+                next.SetFigureAt(fmRook.from, Figure.none);
+                next.SetFigureAt(fmRook.to, fmRook.promotion == Figure.none ? fmRook.figure : fmRook.promotion);
+            }
+                
+                    
             if (moveColor == Color.black)
                 next.moveNumber++;
 
             next.moveColor = moveColor.FlipColor();
+           
             next.GenerateFEN();
             return next;
         }
@@ -155,5 +169,109 @@ namespace Chess
             return after.CanEatKing();
 
         }
+
+
+        public bool CanCastling( int signX)
+        {
+            string[] parts = fen.Split();
+
+            Square whiteKnight = new Square("b1"); // Кони мешающие при длинной рокировке
+            Square blackKnight = new Square("b8");
+
+            if (moveColor == Color.white)
+            {
+                if (signX == 1)
+                    if (parts[2].Contains("K"))
+                        return true;
+
+                if (signX == -1)
+                    if (parts[2].Contains("Q"))
+                        if(GetFigureAt(whiteKnight) == Figure.none)
+                            return true;
+
+            }
+           
+            if (moveColor == Color.black)
+            {
+                if (signX == 1)
+                    if (parts[2].Contains("k"))
+                        return true;
+
+                if (signX == -1)
+                    if (parts[2].Contains("q"))
+                        if(GetFigureAt(whiteKnight) == Figure.none)
+                            return true;
+            }
+
+            return false;
+        }
+
+        public string ChangeCastling(FigureMoving fm)
+        {
+            if (fm.figure == Figure.whiteKing)
+            {
+                castling = castling.Replace('K', '.');
+                castling = castling.Replace('Q', '.');
+            }
+
+            if (fm.figure == Figure.blackKing)
+            {
+                castling = castling.Replace('k', '.');
+                castling = castling.Replace('q', '.');
+            }
+
+            Square QWRook = new Square("a1");
+            Square KWRook = new Square("h1");
+            Square QBRook = new Square("a8");
+            Square KBRook = new Square("h8");
+
+            if (fm.figure == Figure.whiteRook)
+            {
+                if(fm.from == QWRook)
+                    castling = castling.Replace('Q', '.');
+
+                if (fm.from == KWRook)
+                    castling = castling.Replace('K', '.');
+            }
+
+            if (fm.figure == Figure.blackRook)
+            {
+                if (fm.from == QBRook)
+                    castling = castling.Replace('q', '.');
+
+                if (fm.from == KBRook)
+                    castling = castling.Replace('k', '.');
+            }
+
+            return castling;
+
+
+        }
+
+        FigureMoving CastlingMove(FigureMoving fm)
+        {
+            if (fm.figure == Figure.whiteKing)
+            {
+                if(fm.SignX == 1)               
+                    return new FigureMoving("Rh1f1");
+                
+                if (fm.SignX == -1)               
+                    return new FigureMoving("Ra1d1");
+            }
+
+            if (fm.figure == Figure.blackKing)
+            {
+                if (fm.SignX == 1)
+                    return new FigureMoving("rh8f8");
+                
+                if (fm.SignX == -1)
+                    return new FigureMoving("ra8d8");    
+            }
+
+            return null;
+        }
+
+
+
     }
 }

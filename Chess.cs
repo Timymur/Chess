@@ -36,7 +36,13 @@ namespace Chess
                     return this;
             if (board.IsCheckAfterMove(fm))
                 return this;
+
             Board nextBoard = board.Move(fm);
+
+            string nextCastling = nextBoard.ChangeCastling(fm); // После хода меняем фен, если была рокировка. Внутри доски поменять не получится, там проверки следующие на ходы
+            nextBoard.castling = nextCastling;
+            nextBoard.GenerateFEN();
+
             Chess nextChess = new Chess(nextBoard); 
             
             return nextChess;

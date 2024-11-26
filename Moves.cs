@@ -97,7 +97,15 @@ namespace Chess
 
         private bool CanKingMove()
         {
-            if (fm.AbsDeltaX <= 1 && fm.AbsDeltaY <= 1) return true;
+            if (fm.AbsDeltaX <= 1 && fm.AbsDeltaY <= 1)
+                return true;
+            
+
+            if (fm.AbsDeltaX == 2 && fm.DeltaY == 0 &&
+                CanStraightMove() &&
+                board.CanCastling(fm.SignX))
+                return true;
+
             return false;
         }
 
