@@ -199,7 +199,7 @@ namespace Chess
 
                 if (signX == -1)
                     if (parts[2].Contains("q"))
-                        if(GetFigureAt(whiteKnight) == Figure.none)
+                        if(GetFigureAt(blackKnight) == Figure.none)
                             return true;
             }
 

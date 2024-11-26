@@ -62,7 +62,7 @@ namespace Chess
 
                 case Figure.whiteBishop:
                 case Figure.blackBishop:
-                    return (fm.SignX != 0 || fm.SignY != 0) &&
+                    return (fm.SignX != 0 && fm.SignY != 0) &&
                             CanStraightMove();
 
                 case Figure.whiteKnight:
