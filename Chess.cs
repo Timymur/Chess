@@ -11,6 +11,9 @@ namespace Chess
     {
         public string fen { get; private set; }
 
+        public  bool isCheckMate = false;
+        public bool isStaleMate = false;
+
         Board board;
         Moves moves;
         List<FigureMoving> allMoves;
@@ -30,6 +33,17 @@ namespace Chess
 
         public Chess Move(string move) //Pe2e4
         {
+
+            List<string> list = GetAllMoves();
+            if (list.Count == 0)
+            {
+                if(IsCheck())
+                    isCheckMate =true;
+
+                else isStaleMate =true;
+            }
+            if (isCheckMate || isStaleMate) return this;
+            
 
             FigureMoving fm = new FigureMoving(move);
 
