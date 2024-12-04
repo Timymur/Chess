@@ -34,27 +34,25 @@ namespace Chess
         public Chess Move(string move) //Pe2e4
         {
 
-            List<string> list = GetAllMoves();
-            if (list.Count == 0)
-            {
-                if(IsCheck())
-                    isCheckMate =true;
-
-                else isStaleMate =true;
-            }
-            if (isCheckMate || isStaleMate) return this;
+            
+            if (isMate()) return this;
             
 
             FigureMoving fm = new FigureMoving(move);
 
+
             if (!moves.CanMove(fm))
-                    return this;
+                return this;
             if (board.IsCheckAfterMove(fm))
                 return this;
 
+
             Board nextBoard = board.Move(fm);
 
+            if (nextBoard.isPromotionMove(fm)) nextBoard.PromotionMove(fm); // Превращение
+
             nextBoard.castling = nextBoard.ChangeCastling(fm); // После хода меняем фен, если была рокировка. Внутри доски поменять не получится, там проверки следующие на ходы
+
 
             if ((fm.figure == Figure.whitePawn || fm.figure == Figure.blackPawn) && (fm.AbsDeltaY == 2)) //Меняем фен для взятия на проходе.
                 nextBoard.takeOnPass = nextBoard.NextTakeOnPass(fm);
@@ -105,6 +103,22 @@ namespace Chess
             foreach(FigureMoving fm in allMoves )
                 list.Add(fm.ToString());
             return list;
+
+        }
+
+        public bool isMate()
+        {
+            List<string> list = GetAllMoves();
+            if (list.Count == 0)
+            {
+                if (IsCheck())
+                    isCheckMate = true;
+
+                else isStaleMate = true;
+            }
+            if (isCheckMate || isStaleMate) return true;
+
+            return false;
 
         }
 

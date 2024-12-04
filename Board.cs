@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -109,7 +110,8 @@ namespace Chess
 
             Board next = new Board(fen); // создаем новую доску
             next.SetFigureAt(fm.from, Figure.none); // удаляем фигуру с предыдущего места
-            next.SetFigureAt(fm.to, fm.promotion == Figure.none ? fm.figure : fm.promotion);// ставим ее на новую клетку/ Если нет превращения фигуры, а если есть то устанавливаем промоушн  в тот который есть
+            
+            next.SetFigureAt(fm.to, fm.figure);// ставим ее на новую клетку/ Если нет превращения фигуры, а если есть то устанавливаем промоушн  в тот который есть
 
 
             if ((fm.figure == Figure.whiteKing || fm.figure == Figure.blackKing) && (fm.AbsDeltaX == 2)) // Ход ладьей при рокировке
@@ -117,8 +119,9 @@ namespace Chess
                 FigureMoving fmRook;
                 fmRook = CastlingMove(fm);
                 next.SetFigureAt(fmRook.from, Figure.none);
-                next.SetFigureAt(fmRook.to, fmRook.promotion == Figure.none ? fmRook.figure : fmRook.promotion);
+                next.SetFigureAt(fmRook.to,  fmRook.figure);
             }
+
 
             if((fm.figure == Figure.whitePawn || fm.figure == Figure.blackPawn) && (fm.to == new Square(takeOnPass))) // Убийство пешки на проходе
             {
@@ -294,6 +297,22 @@ namespace Chess
         }
 
 
+
+        public bool isPromotionMove(FigureMoving fm)
+        {
+            if((fm.figure == Figure.blackPawn || fm.figure == Figure.whitePawn) &&
+               (fm.to.y == 7 || fm.to.y == 0))
+                   return true;  
+            return false;
+        }
+
+        public void PromotionMove(FigureMoving fm)
+        {
+            if(fm.figure == Figure.blackPawn)
+                SetFigureAt(fm.to, Figure.blackQueen);
+            if (fm.figure == Figure.whitePawn)
+                SetFigureAt(fm.to, Figure.whiteQueen);
+        }
 
 
     }
